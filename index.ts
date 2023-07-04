@@ -1,6 +1,5 @@
 import jose from "node-jose";
 import pako from "pako";
-import fetch from "node-fetch";
 
 const code = process.argv[2];
 
