@@ -12,14 +12,12 @@
   "devDependencies": {
     "@types/node": "^17.0.1",
     "@types/node-jose": "^1.1.8",
-    "@types/pako": "^1.0.2",
     "esbuild": "^0.14.6",
     "esbuild-register": "^3.2.1",
     "prettier": "^2.5.1",
     "typescript": "^4.5.4"
   },
   "dependencies": {
-    "node-jose": "^2.0.0",
-    "pako": "^2.0.4"
+    "node-jose": "^2.0.0"
   }
 }

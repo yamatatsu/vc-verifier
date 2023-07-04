@@ -1,5 +1,5 @@
+import { inflateRawSync } from "node:zlib";
 import jose from "node-jose";
-import pako from "pako";
 
 const code = process.argv[2];
 
@@ -15,7 +15,7 @@ async function main(code: string) {
 
   const payload = await verify(jws, jwks);
 
-  const json = Buffer.from(pako.inflateRaw(payload)).toString("utf-8");
+  const json = inflateRawSync(payload).toString("utf-8");
   console.info(JSON.stringify(JSON.parse(json), null, 2));
 }
 
