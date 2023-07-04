@@ -8,15 +8,25 @@ main(code);
 async function main(code: string) {
   // reverse it @see https://github.com/smart-on-fhir/health-cards/blob/0acc3ccc0c40de20fc9c75bf9305c8cda080ae1f/generate-examples/src/index.ts#L213-L217
   const jws = decode2Jws(code);
-  // console.debug("jws:", jws);
+
+  const [header, payload] = jws.split(".");
+  console.debug(
+    "header:",
+    formatJson(Buffer.from(header, "base64url").toString("utf-8"))
+  );
+  console.debug(
+    "claims:",
+    formatJson(
+      inflateRawSync(Buffer.from(payload, "base64url")).toString("utf-8")
+    )
+  );
 
   const jwks = await fetchJwks();
-  // console.debug("jwks:", jwks);
+  console.debug("jwks:", JSON.stringify(jwks, null, 2));
 
-  const payload = await verify(jws, jwks);
+  await verify(jws, jwks);
 
-  const jsonString = inflateRawSync(payload).toString("utf-8");
-  console.info(formatJson(jsonString));
+  console.info("Success!");
 }
 
 function decode2Jws(code: string): string {
@@ -42,12 +52,13 @@ async function fetchJwks() {
   return jwks;
 }
 
-async function verify(jws: string, jwks: any): Promise<Buffer> {
+async function verify(
+  jws: string,
+  jwks: any
+): Promise<jose.JWS.VerificationResult> {
   const keystore = await jose.JWK.asKeyStore(jwks);
   const verifier = jose.JWS.createVerify(keystore);
-
-  const verified = await verifier.verify(jws);
-  return verified.payload;
+  return verifier.verify(jws);
 }
 
 function formatJson(str: string): string {
