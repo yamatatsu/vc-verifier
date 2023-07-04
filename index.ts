@@ -15,8 +15,8 @@ async function main(code: string) {
 
   const payload = await verify(jws, jwks);
 
-  const json = inflateRawSync(payload).toString("utf-8");
-  console.info(JSON.stringify(JSON.parse(json), null, 2));
+  const jsonString = inflateRawSync(payload).toString("utf-8");
+  console.info(formatJson(jsonString));
 }
 
 function decode2Jws(code: string): string {
@@ -48,4 +48,8 @@ async function verify(jws: string, jwks: any): Promise<Buffer> {
 
   const verified = await verifier.verify(jws);
   return verified.payload;
+}
+
+function formatJson(str: string): string {
+  return JSON.stringify(JSON.parse(str), null, 2);
 }
