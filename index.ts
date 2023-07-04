@@ -13,18 +13,13 @@ async function main(code: string) {
     .join("");
   // console.debug("jws:", jws);
 
-  const jwks: any = await fetchJwks();
+  const jwks = await fetchJwks();
   // console.debug("jwks:", jwks);
-  const keystore = await jose.JWK.asKeyStore(jwks);
-  const verifier = jose.JWS.createVerify(keystore);
 
-  const verified = await verifier.verify(jws);
-  // console.debug("verified", verified);
+  const payload = await verify(jws, jwks);
 
-  const payload = Buffer.from(pako.inflateRaw(verified.payload)).toString(
-    "utf-8"
-  );
-  console.info(JSON.stringify(JSON.parse(payload), null, 2));
+  const json = Buffer.from(pako.inflateRaw(payload)).toString("utf-8");
+  console.info(JSON.stringify(JSON.parse(json), null, 2));
 }
 
 function split2Char(code: string): string[] {
@@ -41,4 +36,12 @@ async function fetchJwks() {
   const res = await fetch(jwksUrl);
   const jwks = await res.json();
   return jwks;
+}
+
+async function verify(jws: string, jwks: any): Promise<Buffer> {
+  const keystore = await jose.JWK.asKeyStore(jwks);
+  const verifier = jose.JWS.createVerify(keystore);
+
+  const verified = await verifier.verify(jws);
+  return verified.payload;
 }
