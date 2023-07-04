@@ -9,7 +9,7 @@ async function main(code: string) {
   // reverse it @see https://github.com/smart-on-fhir/health-cards/blob/0acc3ccc0c40de20fc9c75bf9305c8cda080ae1f/generate-examples/src/index.ts#L213-L217
   const jws = decode2Jws(code);
 
-  const [header, payload] = jws.split(".");
+  const [header, payload, signature] = jws.split(".");
   console.debug(
     "header:",
     formatJson(Buffer.from(header, "base64url").toString("utf-8"))
@@ -19,6 +19,11 @@ async function main(code: string) {
     formatJson(
       inflateRawSync(Buffer.from(payload, "base64url")).toString("utf-8")
     )
+  );
+  console.debug(
+    "signature:",
+    signature.slice(0, 10) + "...",
+    `(length: ${signature.length})`
   );
 
   const jwks = await fetchJwks();
